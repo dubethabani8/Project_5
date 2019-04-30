@@ -6,6 +6,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "Circuit.h"
 
 /**
@@ -88,18 +89,42 @@ static void test3In1Out(Circuit* circuit, bool in0, bool in1, bool in2) {
 	printf("%s %s %s -> %s\n", b2s(in0), b2s(in1), b2s(in2), b2s(out0));
 }
 
+static void test(Circuit* circuit){
+	int n = Circuit_numInputs(circuit);
+	int combo[n];
+	int mask = 1;
+	int numCombos = pow(2,n);
+	for(int i=0; i<numCombos; i++){
+		for(int j=0; j<n; j++){
+			combo[j] = i >> j & mask;
+			Circuit_setInput(circuit, j, combo[j]);
+		}
+		Circuit_update(circuit);
+		bool out0 = Circuit_getOutput(circuit, 0);
+		for(int j=0; j<n; j++) printf("%s ", b2s(combo[j]));
+		printf(" - > %s ", b2s(out0));
+		printf("\n");
+	}
+	
+}
+
 
 int main(int argc, char **argv) {
+
+
 	Circuit* circuit = Circuit_a();
-	printf("The and3 circuit (AND of three inputs):\n");
 	Circuit_dump(circuit);
-	printf("\n");
-	printf("Testing: Some input(s) false: should be false\n");
-	test3In1Out(circuit, true, true, false);
-	printf("Testing: All inputs true: should be true\n");
-	test3In1Out(circuit, true, true, true);
-	printf("Note: Your program needs to test all possible combinations of input values,\nin order from all false to all true, using a single function.\n");
-	Circuit_free(circuit);
+	test(circuit);
+
+	// printf("The and3 circuit (AND of three inputs):\n");
+	// Circuit_dump(circuit);
+	// printf("\n");
+	// printf("Testing: Some input(s) false: should be false\n");
+	// test3In1Out(circuit, true, true, false);
+	// printf("Testing: All inputs true: should be true\n");
+	// test3In1Out(circuit, true, true, true);
+	// printf("Note: Your program needs to test all possible combinations of input values,\nin order from all false to all true, using a single function.\n");
+	// Circuit_free(circuit);
 }
 
 
