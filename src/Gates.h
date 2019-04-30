@@ -21,6 +21,8 @@ extern Boolean* Gate_getOutput(Gate* this);
 
 extern Gate* new_Inverter();
 extern Gate* new_AndGate();
+extern Gate* new_NandGate();
+extern Gate* new_NOrGate();
 extern Gate* new_OrGate();
 extern Gate* new_And3Gate();
 extern Gate* new_Or4Gate();
