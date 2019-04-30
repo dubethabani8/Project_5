@@ -76,6 +76,92 @@ static Circuit* Circuit_a() {
 	return circuit;
 }
 
+static Circuit* CircuitB() {
+	Boolean* x = new_Boolean(false);
+	Boolean* y = new_Boolean(false);
+	Boolean* z = new_Boolean(false);
+	Boolean** inputs = new_Boolean_array(3);
+	inputs[0] = x;
+	inputs[1] = y;
+	inputs[2] = z;
+
+	Boolean* out = new_Boolean(false);
+	Boolean** outputs = new_Boolean_array(1);
+	outputs[0] = out;
+
+	Gate* A0 = new_Inverter();
+	Gate* A1 = new_NandGate();
+	Gate* A2 = new_NandGate();
+	Gate* A3 = new_NOrGate();
+	Gate** gates = new_Gate_array(4);
+	gates[0] = A0;
+	gates[1] = A1;
+	gates[2] = A2;
+	gates[3] = A3;
+
+	Circuit *circuitB = new_Circuit(3, inputs, 1, outputs, 4, gates);
+
+	Circuit_connect(circuitB, y, Gate_getInput(A0, 0));
+	
+	Circuit_connect(circuitB, x, Gate_getInput(A1, 0));
+	Circuit_connect(circuitB, Gate_getOutput(A0), Gate_getInput(A1, 1));
+
+	Circuit_connect(circuitB, y, Gate_getInput(A2, 0));
+	Circuit_connect(circuitB, z, Gate_getInput(A2, 1));
+
+	Circuit_connect(circuitB, Gate_getOutput(A1), Gate_getInput(A3, 0));
+	Circuit_connect(circuitB, Gate_getOutput(A2), Gate_getInput(A3, 1));
+
+	Circuit_connect(circuitB, Gate_getOutput(A3), out);
+
+	return circuitB;
+}
+
+
+static Circuit* CircuitC() {
+	Boolean* x = new_Boolean(false);
+	Boolean* y = new_Boolean(false);
+	Boolean* z = new_Boolean(false);
+	Boolean** inputs = new_Boolean_array(3);
+	inputs[0] = x;
+	inputs[1] = y;
+	
+	Boolean* out = new_Boolean(false);
+	Boolean** outputs = new_Boolean_array(1);
+	outputs[0] = out;
+
+	Gate* A0 = new_AndGate();
+	Gate* A1 = new_Inverter();
+	Gate* A2 = new_Inverter();
+	Gate* A3 = new_AndGate();
+	Gate* A4 = new_OrGate();
+	Gate** gates = new_Gate_array(5);
+	gates[0] = A0;
+	gates[1] = A1;
+	gates[2] = A2;
+	gates[3] = A3;
+	gates[4] = A4;
+
+	Circuit *circuitC = new_Circuit(2, inputs, 1, outputs, 5, gates);
+
+	Circuit_connect(circuitC, y, Gate_getInput(A0, 0));
+	Circuit_connect(circuitC, x, Gate_getInput(A0, 1));
+
+	Circuit_connect(circuitC, x, Gate_getInput(A1, 0));
+
+	Circuit_connect(circuitC, y, Gate_getInput(A2, 0));
+	
+	Circuit_connect(circuitC, Gate_getOutput(A1), Gate_getInput(A3, 0));
+	Circuit_connect(circuitC, Gate_getOutput(A2), Gate_getInput(A3, 1));
+
+	Circuit_connect(circuitC, Gate_getOutput(A0), Gate_getInput(A4, 0));
+	Circuit_connect(circuitC, Gate_getOutput(A3), Gate_getInput(A4, 1));
+
+	Circuit_connect(circuitC, Gate_getOutput(A4), out);
+	
+	return circuitC;
+}
+
 static char* b2s(bool b) {
 	return b ? "T" : "F";
 }
@@ -111,10 +197,30 @@ static void test(Circuit* circuit){
 
 int main(int argc, char **argv) {
 
-
+	printf("\n\nTESTING CIRCUIT A:\n\n\n");
 	Circuit* circuit = Circuit_a();
 	Circuit_dump(circuit);
+	printf("\n");
+	printf("\n\nRESULTS FOR A\n\n");
 	test(circuit);
+	Circuit_free(circuit);
+
+	printf("\n\nTESTING CIRCUIT B:\n");
+	Circuit* circuitB = CircuitB();
+	Circuit_dump(circuitB);
+	printf("\n");
+	printf("\n\nRESULTS FOR B\n\n");
+	test(circuitB);
+	Circuit_free(circuitB);
+
+	printf("\n\nTESTING CIRCUIT C:\n");
+	Circuit* circuitC = CircuitC();
+	Circuit_dump(circuitC);
+	printf("\n");
+	printf("\n\nRESULTS FOR C\n\n");
+	test(circuitC);
+	Circuit_free(circuitC);
+
 
 	// printf("The and3 circuit (AND of three inputs):\n");
 	// Circuit_dump(circuit);
